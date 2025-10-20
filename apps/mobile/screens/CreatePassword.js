@@ -26,30 +26,37 @@ export default function CreatePassword({ navigation, route }) {
   const { userId } = route.params || {};
 
   const handleCreatePassword = async () => {
+    console.log("Button pressed!");
     setLoading(true);
+    console.log("Loading set to true");
+
     setError(null);
 
     if (!password || !confirmPassword) {
       setError("Both fields are required");
       setLoading(false);
+      console.log("Error: Both fields are required");
       return;
     }
 
     if (password !== confirmPassword) {
       setError("Passwords do not match");
       setLoading(false);
+      console.log("Error: Passwords do not match");
       return;
     }
 
     if (!userId) {
       setError("Missing user ID");
       setLoading(false);
+      console.log("Error: Missing user ID");
       return;
     }
 
     try {
+      console.log("Calling API...");
       const response = await fetch(
-        "http://192.168.101.106:9091/api/user-accounts/signup",
+        "http://172.20.10.8:9091/api/user-accounts/signup",
         {
           method: "POST",
           headers: {
@@ -72,6 +79,9 @@ export default function CreatePassword({ navigation, route }) {
         data = textResponse;
       }
 
+      console.log("Response status:", response.status);
+      console.log("Response data:", data);
+
       if (!response.ok) {
         setError(
           typeof data === "string"
@@ -79,10 +89,12 @@ export default function CreatePassword({ navigation, route }) {
             : data?.message || JSON.stringify(data) || "Failed to set password"
         );
         setLoading(false);
+        console.log("API Error:", error);
         return;
       }
 
       setLoading(false);
+      console.log("Password created successfully");
       Alert.alert("Success", "Password created successfully!", [
         {
           text: "Login",
@@ -92,14 +104,12 @@ export default function CreatePassword({ navigation, route }) {
     } catch (err) {
       setLoading(false);
       setError("Network error: " + err.message);
+      console.log("Network error:", err.message);
     }
   };
 
   return (
-    <LinearGradient
-      colors={["#145DA0", "#0C2D48"]}
-      style={styles.container}
-    >
+    <LinearGradient colors={["#145DA0", "#0C2D48"]} style={styles.container}>
       <StatusBar style="light" />
 
       {/* Back Button */}

@@ -1,4 +1,3 @@
-// ChangePasswordRequest.java
 package com.cardconnect.backend.dto;
 
 public class ChangePasswordRequest {

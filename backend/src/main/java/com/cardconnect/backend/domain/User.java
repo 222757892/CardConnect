@@ -28,7 +28,7 @@ public abstract class User {
     protected IDType idType;
 
     protected String identificationNumber;
-    protected boolean agreedToTerms;
+    protected boolean agreedToTerms; //will be removed later
 
     @Lob
     protected byte[] profilePhoto;

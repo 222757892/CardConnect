@@ -12,6 +12,7 @@ import { useState } from "react";
 import { MaterialIcons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { AppButton } from "../components/MobileButton.js"; // Import your custom button
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function Login({ navigation }) {
   const [studentNumber, setStudentNumber] = useState("");
@@ -26,7 +27,7 @@ export default function Login({ navigation }) {
 
     try {
       const response = await fetch(
-        "http://192.168.101.106:9091/api/user-accounts/login",
+        "http://192.168.101.105:9091/api/user-accounts/login",
         {
           method: "POST",
           headers: {
@@ -55,8 +56,14 @@ export default function Login({ navigation }) {
       }
 
       if (data?.token) {
-        console.log("Token:", data.token);
-        // Store token, navigate, etc.
+        // Store token and optionally user info
+        console.log("Saving token:", data.token); // <-- Add this
+        await AsyncStorage.setItem("token", data.token);
+        await AsyncStorage.setItem("email", data.email);
+        await AsyncStorage.setItem("userId", data.userId);
+        // You can also store name/role/etc. if needed
+
+        console.log("Token stored.");
       }
 
       setLoading(false);
@@ -64,7 +71,12 @@ export default function Login({ navigation }) {
       Alert.alert("Success", "Login successful!", [
         {
           text: "OK",
-          onPress: () => navigation.navigate("Profile"),
+          onPress: () => {
+            navigation.reset({
+              index: 0,
+              routes: [{ name: "MainDrawer" }],
+            });
+          },
         },
       ]);
     } catch (err) {

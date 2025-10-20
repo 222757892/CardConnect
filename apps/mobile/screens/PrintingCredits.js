@@ -1,11 +1,13 @@
-import React, { useState } from "react";
-import { View, Text, StyleSheet, TextInput, Alert } from "react-native";
+// Swatsi Ratia PrntingCredits
+import React, { useState, useContext } from "react";
+import { View, Text, StyleSheet, TextInput, Alert, Image } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import ScreenHeader from "../components/ScreenHeader";
-import { AppButton } from "../components/button";
+import { AppButton } from "../components/MobileButton";
+import { CreditsContext } from "../context/CreditsContext";
 
 export default function LoadCreditsScreen() {
-  const [credits, setCredits] = useState(50); // Example starting balance
+  const { credits, addCredits } = useContext(CreditsContext);
   const [amountToLoad, setAmountToLoad] = useState("");
 
   const handleLoadCredits = () => {
@@ -15,7 +17,7 @@ export default function LoadCreditsScreen() {
       return;
     }
 
-    setCredits(credits + amount);
+    addCredits(amount);
     Alert.alert(
       "Success",
       `Successfully loaded ${amount} credits. New balance: ${credits + amount}`
@@ -44,7 +46,6 @@ export default function LoadCreditsScreen() {
         Load Credits
       </AppButton>
 
-      {/* Future: Add payment gateway integration */}
       <Text style={styles.note}>
         *In production, this could link to a payment gateway (e.g. PayFast,
         PayPal).
@@ -56,37 +57,48 @@ export default function LoadCreditsScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: "#F5F2F2",
     padding: 20,
-    backgroundColor: "#F4F9F9",
+  },
+  headerRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 16,
+  },
+  logo: {
+    width: 48,
+    height: 48,
+    marginRight: 12,
   },
   balanceCard: {
-    marginVertical: 20,
-    padding: 20,
-    backgroundColor: "#145DA0",
-    borderRadius: 12,
+    backgroundColor: "#fff",
+    borderRadius: 10,
+    padding: 18,
+    marginBottom: 20,
     alignItems: "center",
+    elevation: 2,
   },
   balanceLabel: {
-    fontSize: 16,
-    color: "#fff",
+    fontSize: 14,
+    color: "#284B63",
+    marginBottom: 4,
   },
   balanceValue: {
-    fontSize: 28,
+    fontSize: 22,
     fontWeight: "bold",
-    color: "#fff",
-    marginTop: 5,
+    color: "#145DA0",
   },
   input: {
     borderWidth: 1,
-    borderColor: "#284B63",
+    borderColor: "#ccc",
     borderRadius: 8,
-    padding: 12,
+    padding: 10,
     marginBottom: 16,
-    backgroundColor: "#fff",
     fontSize: 16,
+    backgroundColor: "#fff",
   },
   loadBtn: {
-    marginBottom: 20,
+    marginBottom: 16,
     borderRadius: 10,
   },
   note: {

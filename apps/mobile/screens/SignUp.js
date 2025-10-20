@@ -42,7 +42,7 @@ export default function SignUp({ navigation }) {
     setLoading(true);
     try {
       const response = await fetch(
-        "http://192.168.101.106:9091/api/user-accounts/verify-student",
+        "http://192.168.101.105:9091/api/user-accounts/verify-student",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

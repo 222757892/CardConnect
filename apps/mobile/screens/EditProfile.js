@@ -13,11 +13,10 @@ import { AppButton } from "../components/MobileButton";
 import { useNavigation } from "@react-navigation/native";
 import * as ImagePicker from "expo-image-picker";
 import { MaterialIcons } from "@expo/vector-icons";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function EditProfile() {
   const navigation = useNavigation();
-  const studentNumber = "STU000002"; // Replace with actual value (or from auth context)
-
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -25,16 +24,27 @@ export default function EditProfile() {
   // Editable fields
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
-  const [photoUpdated, setPhotoUpdated] = useState(false);
 
   const fetchProfile = async () => {
+    setLoading(true);
+    setError(null);
     try {
-      const res = await fetch(
-        `http://192.168.101.106:9091/api/profile/${studentNumber}`
-      );
+      const token = await AsyncStorage.getItem("token");
+      if (!token) throw new Error("No token found. Please log in again.");
+
+      const res = await fetch("http://192.168.101.105:9091/api/profile", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+
       if (!res.ok) {
-        throw new Error("Failed to fetch profile");
+        const text = await res.text();
+        console.log("❌ Fetch error:", text);
+        throw new Error(`Failed to fetch profile (${res.status})`);
       }
+
       const data = await res.json();
       setProfile(data);
       setPhone(data.contactNumber || "");
@@ -52,19 +62,23 @@ export default function EditProfile() {
 
   const handleSave = async () => {
     try {
-      const res = await fetch(
-        `http://192.168.101.106:9091/api/profile/${studentNumber}`,
-        {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            contactNumber: phone,
-            email: email,
-          }),
-        }
-      );
+      const token = await AsyncStorage.getItem("token");
+
+      const res = await fetch("http://172.20.10.8:9091/api/profile", {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          contactNumber: phone,
+          email: email,
+        }),
+      });
 
       if (!res.ok) {
+        const text = await res.text();
+        console.log("❌ Save error:", text);
         throw new Error("Update failed");
       }
 
@@ -73,13 +87,13 @@ export default function EditProfile() {
       ]);
     } catch (err) {
       Alert.alert("Error", err.message);
+      console.log("❌ handleSave error:", err);
     }
   };
 
-  // Updated photo upload handler
+  // Optional: if your backend supports uploading without userId in the path, this should be updated.
   const handlePhotoUpload = async () => {
     try {
-      // Request permission first
       const permissionResult =
         await ImagePicker.requestMediaLibraryPermissionsAsync();
 
@@ -91,52 +105,53 @@ export default function EditProfile() {
         return;
       }
 
-      // Launch image picker
       const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: "Images", // Correct enum usage here
+        mediaTypes: ImagePicker.MediaTypeOptions.Images, // safer enum usage
         allowsEditing: true,
         aspect: [1, 1],
         quality: 1,
       });
 
-      // Check if user cancelled or no assets returned
-      if (result.canceled || !result.assets || result.assets.length === 0) {
-        Alert.alert("No image selected", "You did not select any image.");
+      if (result.canceled || !result.assets?.length) {
+        Alert.alert("No image selected");
         return;
       }
 
-      // Get the selected photo object
-      const photo = result.assets[0];
+      const token = await AsyncStorage.getItem("token");
+      if (!token) {
+        Alert.alert("Error", "You must be logged in to upload a photo.");
+        return;
+      }
 
-      // Create FormData for upload
+      const photo = result.assets[0];
       const formData = new FormData();
       formData.append("file", {
         uri: photo.uri,
-        name: photo.fileName || "profile.jpg", // Use fileName if available
-        type: photo.type || "image/jpeg", // Use mime type if available
+        name: photo.fileName || "profile.jpg",
+        type: photo.type || "image/jpeg",
       });
 
-      // Upload photo to backend
       const res = await fetch(
-        `http://192.168.101.106:9091/api/profile/${studentNumber}/photo`,
+        `http://172.20.10.8:9091/api/profile/${profile.userId}/photo`,
         {
           method: "PUT",
-          //   headers: {
-          //     "Content-Type": "multipart/form-data",
-          //   },
+          headers: {
+            Authorization: `Bearer ${token}`,
+            // Don't set Content-Type! Let fetch set it automatically
+          },
           body: formData,
         }
       );
 
       if (!res.ok) {
-        throw new Error("Failed to upload photo");
+        const errorText = await res.text();
+        throw new Error(`Upload failed: ${errorText}`);
       }
 
       Alert.alert("Photo Updated", "Profile photo uploaded successfully.");
-      setPhotoUpdated(true);
     } catch (error) {
+      console.error("❌ Upload error:", error);
       Alert.alert("Upload Failed", error.message);
-      console.error("Upload error:", error);
     }
   };
 
@@ -158,7 +173,6 @@ export default function EditProfile() {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      {/* Custom Back Button */}
       <TouchableOpacity
         onPress={() => navigation.goBack()}
         style={styles.backButton}
@@ -169,7 +183,9 @@ export default function EditProfile() {
       <View style={styles.photoContainer}>
         <Image
           source={{
-            uri: `http://192.168.101.106:9091/api/profile/${studentNumber}/photo?timestamp=${Date.now()}`,
+            uri: `http://172.20.10.8:9091/api/profile/${
+              profile.userId
+            }/photo?timestamp=${Date.now()}`,
           }}
           style={styles.photo}
         />

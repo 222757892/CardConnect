@@ -4,7 +4,7 @@ import java.time.LocalDate;
 
 public class StudentProfileDTO {
     private Long id;
-    private String userId; // renamed from studentNumber
+    private String userId; // is actually a student number
     private String firstName;
     private String lastName;
     private String contactNumber;

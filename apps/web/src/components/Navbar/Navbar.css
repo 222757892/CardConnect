@@ -1,0 +1,116 @@
+nav {
+    height: 80px;
+    padding: 0 8%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    background-color: white;
+    position: relative;
+    z-index: 10;
+}
+
+/* Nav Left */
+.nav-left {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.nav-left img {
+    height: 40px;
+}
+
+.fa-solid {
+    font-size: 20px;
+    cursor: pointer;
+    color: #555;
+    transition: all 0.2s ease;
+}
+
+.fa-solid:hover {
+    color: var(--blue);
+}
+
+/* Nav Right */
+nav ul {
+    list-style: none;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+nav li {
+    height: 75px;
+    outline: none;
+}
+
+.logo-img {
+    height: 40px;
+    width: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+nav a {
+    height: 100%;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    color: #000000;
+    font-size: 16px;
+    font-weight: 500;
+    transition: color 0.2s;
+}
+
+nav a:hover {
+    color: var(--blue);
+}
+
+.profile-button {
+    background: none;
+    border: none;
+    color: #000000;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: color 0.2s;
+    height: 100%;
+    display: flex;
+    align-items: center;
+}
+
+.profile-button:hover {
+    color: var(--blue);
+}
+
+@media (max-width: 650px) {
+    nav {
+        padding: 0 5%;
+    }
+
+    .nav-left {
+        gap: 15px;
+    }
+}
+
+@media (max-width: 600px) {
+    nav {
+        height: 70px;
+        padding: 0 15px;
+    }
+
+    .nav-left img {
+        height: 35px;
+    }
+
+    .logo-img {
+        height: 35px;
+        width: 35px;
+    }
+
+    nav a {
+        padding: 0 12px;
+        font-size: 14px;
+    }
+}

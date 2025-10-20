@@ -42,9 +42,9 @@
 //     private IUserRepository userRepository;
 
 //     // NEW student details to avoid conflicts and ensure uniqueness
-//     private static final String STUDENT_ID = "STU654321";
-//     private static final String ID_NUMBER = "9902025050099";
-//     private static final String PASSWORD = "Strong@789";
+//     private static final String STUDENT_ID = "STU222222";
+//     private static final String ID_NUMBER = "9902025022222";
+//     private static final String PASSWORD = "Strong@222";
 
 //     private static Long createdAccountId;
 
@@ -58,11 +58,11 @@
 //         Student student = new Student.Builder()
 //                 .setUserId(STUDENT_ID)
 //                 .setRole(Role.ROLE_STUDENT)
-//                 .setFirstName("Sipho")
-//                 .setLastName("Nkosi")
-//                 .setGender('M')
-//                 .setContactNumber("0847654321")
-//                 .setDateOfBirth(LocalDate.of(2000, 2, 2))
+//                 .setFirstName("Nancy")
+//                 .setLastName("Lancy")
+//                 .setGender('F')
+//                 .setContactNumber("0847611111")
+//                 .setDateOfBirth(LocalDate.of(2002, 5, 22))
 //                 .setIdType(User.IDType.SA_ID)
 //                 .setIdentificationNumber(ID_NUMBER)
 //                 .setAgreedToTerms(true)
@@ -75,16 +75,6 @@
 //         Student saved = studentService.create(student);
 //         assertNotNull(saved);
 //         assertEquals(STUDENT_ID, saved.getUserId());
-//     }
-
-//     /**
-//      * Step 1: Verify student identity before allowing signup.
-//      */
-//     @Test
-//     @Order(2)
-//     void testVerifyStudent() {
-//         String verifiedId = userAccountService.verifyStudent(STUDENT_ID, ID_NUMBER);
-//         assertEquals(STUDENT_ID, verifiedId);
 //     }
 
 //     /**
@@ -125,33 +115,32 @@
 //         assertEquals(STUDENT_ID, account.getUser().getUserId());
 //     }
 
-//     // @Test
-//     // @Order(6)
-//     // @Rollback(false)
-//     // void testUpdateCreatedAt() {
-//     // assertNotNull(createdAccountId, "Created account ID must not be null before
-//     // updating");
+//     @Test
+//     @Order(6)
+//     @Rollback(false)
+//     void testUpdateCreatedAt() {
+//         assertNotNull(createdAccountId, "Created account ID must not be null before updating");
 
-//     // // Read current UserAccount
-//     // UserAccount account = userAccountService.read(createdAccountId);
-//     // assertNotNull(account);
+//         // Read current UserAccount
+//         UserAccount account = userAccountService.read(createdAccountId);
+//         assertNotNull(account);
 
-//     // // New createdAt time (e.g., one day later)
-//     // LocalDateTime newCreatedAt = account.getCreatedAt().plusDays(1);
+//         // New createdAt time (e.g., one day later)
+//         LocalDateTime newCreatedAt = account.getCreatedAt().plusDays(1);
 
-//     // // Build updated UserAccount with new createdAt
-//     // UserAccount updatedAccount = new UserAccount.Builder()
-//     // .copy(account)
-//     // .setCreatedAt(newCreatedAt)
-//     // .build();
+//         // Build updated UserAccount with new createdAt
+//         UserAccount updatedAccount = new UserAccount.Builder()
+//                 .copy(account)
+//                 .setCreatedAt(newCreatedAt)
+//                 .build();
 
-//     // // Save updated account
-//     // UserAccount savedAccount = userAccountService.update(updatedAccount);
-//     // assertNotNull(savedAccount);
+//         // Save updated account
+//         UserAccount savedAccount = userAccountService.update(updatedAccount);
+//         assertNotNull(savedAccount);
 
-//     // // Verify updated createdAt
-//     // assertEquals(newCreatedAt, savedAccount.getCreatedAt());
-//     // }
+//         // Verify updated createdAt
+//         assertEquals(newCreatedAt, savedAccount.getCreatedAt());
+//     }
 
 //     /**
 //      * Fetch all accounts and check that the newly created one exists.
@@ -198,8 +187,8 @@
 //         Authentication auth = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
 //         SecurityContextHolder.getContext().setAuthentication(auth);
 
-//         // 2. Attempt to change the password
-//         UserAccount updatedAccount = userAccountService.changePassword(oldPassword, newPassword);
+//         // 2. Attempt to change the password - FIXED: Added email as first argument
+//         UserAccount updatedAccount = userAccountService.changePassword(email, oldPassword, newPassword);
 
 //         assertNotNull(updatedAccount);
 //         assertEquals(email, updatedAccount.getEmail());
@@ -214,14 +203,14 @@
 //     /**
 //      * Delete the account and ensure it's gone.
 //      */
-//     // @Test
-//     // @Order(9)
-//     // @Rollback(false)
-//     // void testDeleteAccount() {
-//     // boolean deleted = userAccountService.delete(createdAccountId);
-//     // assertTrue(deleted);
-//     //
-//     // UserAccount deletedAccount = userAccountService.read(createdAccountId);
-//     // assertNull(deletedAccount);
-//     // }
+//     @Test
+//     @Order(9)
+//     @Rollback(false)
+//     void testDeleteAccount() {
+//         boolean deleted = userAccountService.delete(createdAccountId);
+//         assertTrue(deleted);
+
+//         UserAccount deletedAccount = userAccountService.read(createdAccountId);
+//         assertNull(deletedAccount);
+//     }
 // }

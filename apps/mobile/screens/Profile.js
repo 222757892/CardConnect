@@ -1,5 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { ScrollView, View, StyleSheet, ActivityIndicator, TouchableOpacity } from "react-native";
+import {
+  ScrollView,
+  View,
+  StyleSheet,
+  ActivityIndicator,
+  TouchableOpacity,
+} from "react-native";
 import { Text, Avatar } from "react-native-paper";
 import InfoCard from "../components/InfoCard";
 import InfoRow from "../components/InfoRow";
@@ -7,6 +13,8 @@ import { AppButton } from "../components/MobileButton";
 import { useNavigation } from "@react-navigation/native";
 import { useFocusEffect } from "@react-navigation/native";
 import { MaterialIcons } from "@expo/vector-icons";
+import NavBar from "../components/NavigationBar";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function Profile() {
   const navigation = useNavigation();
@@ -16,22 +24,71 @@ export default function Profile() {
   const [error, setError] = useState(null);
 
   // Replace with actual student number, or get it dynamically
-  const studentNumber = "STU000002";
+  // const studentNumber = "STU000002";
+
+  // const fetchProfile = async () => {
+  //   setLoading(true);
+  //   try {
+  //     const storedUserId = await AsyncStorage.getItem("userId");
+
+  //     if (!storedUserId) {
+  //       throw new Error("User ID not found. Please log in again.");
+  //     }
+
+  //     const response = await fetch(
+  //       `http://192.168.101.105:9091/api/profile/${storedUserId}`
+  //     );
+
+  //     if (!response.ok) {
+  //       throw new Error("Failed to fetch profile");
+  //     }
+
+  //     const data = await response.json();
+  //     setProfile(data);
+  //     setError(null);
+  //   } catch (err) {
+  //     setError(err.message || "Error fetching profile");
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
 
   const fetchProfile = async () => {
     setLoading(true);
+    setError(null);
     try {
-      const response = await fetch(
-        `http://192.168.101.106:9091/api/profile/${studentNumber}`
-      );
-      if (!response.ok) {
-        throw new Error("Failed to fetch profile");
+      const token = await AsyncStorage.getItem("token");
+
+      if (!token) {
+        console.log("❌ No token found in storage");
+        setError("No token found. Please log in again.");
+        setLoading(false);
+        return;
       }
-      const data = await response.json();
-      setProfile(data);
-      setError(null);
-    } catch (err) {
-      setError(err.message || "Error fetching profile");
+
+      const response = await fetch("http://192.168.101.105:9091/api/profile", {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      console.log("📡 Status Code:", response.status);
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log("✅ Profile fetched:", data);
+        setProfile(data); // <---- THIS IS CRUCIAL
+        setError(null);
+      } else {
+        const errorText = await response.text();
+        console.log("❌ Failed to fetch profile:", errorText);
+        setError("Failed to fetch profile");
+      }
+    } catch (error) {
+      console.log("🔥 Network or other error:", error.message);
+      setError(error.message);
     } finally {
       setLoading(false);
     }
@@ -64,7 +121,9 @@ export default function Profile() {
           { justifyContent: "center", alignItems: "center" },
         ]}
       >
-        <Text style={{ color: "red" }}>{error}</Text>
+        <Text style={{ color: "red", padding: 20, textAlign: "center" }}>
+          {error}
+        </Text>
       </View>
     );
   }
@@ -136,6 +195,18 @@ export default function Profile() {
             value="Only instructors can view my profile information"
           />
         </InfoCard>
+        <AppButton
+          style={styles.logoutButton}
+          onPress={async () => {
+            await AsyncStorage.clear(); // Clear token and user info
+            navigation.reset({
+              index: 0,
+              routes: [{ name: "Login" }],
+            });
+          }}
+        >
+          Logout
+        </AppButton>
       </View>
     </ScrollView>
   );
@@ -205,5 +276,11 @@ const styles = StyleSheet.create({
     left: 20,
     zIndex: 10,
     padding: 5,
+  },
+  logoutButton: {
+    marginTop: 20,
+    backgroundColor: "#D9534F", // Bootstrap "danger" color
+    width: 200,
+    alignSelf: "center",
   },
 });

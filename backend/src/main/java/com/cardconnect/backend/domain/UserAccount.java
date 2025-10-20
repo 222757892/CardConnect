@@ -1,7 +1,6 @@
 package com.cardconnect.backend.domain;
 
 import jakarta.persistence.*;
-
 import java.time.LocalDateTime;
 
 @Entity
@@ -19,6 +18,9 @@ public class UserAccount {
 
     private LocalDateTime createdAt;
 
+    @Transient
+    private String token; // ✅ JWT token (not persisted in DB)
+
     @OneToOne
     @JoinColumn(name = "user_id", referencedColumnName = "id") // FK to User PK
     private User user;
@@ -28,14 +30,15 @@ public class UserAccount {
     }
 
     private UserAccount(Builder builder) {
-        this.accountId = builder.accountId; // optional for copy/update, ignored on create
+        this.accountId = builder.accountId;
         this.email = builder.email;
         this.passwordHash = builder.passwordHash;
         this.createdAt = builder.createdAt != null ? builder.createdAt : LocalDateTime.now();
         this.user = builder.user;
+        this.token = builder.token;
     }
 
-    // Getters
+    // === Getters ===
 
     public Long getAccountId() {
         return accountId;
@@ -57,6 +60,14 @@ public class UserAccount {
         return user;
     }
 
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
+
     @Override
     public String toString() {
         return "UserAccount{" +
@@ -74,6 +85,7 @@ public class UserAccount {
         private String passwordHash;
         private LocalDateTime createdAt;
         private User user;
+        private String token; // ✅ Add token to builder for convenience
 
         public Builder setAccountId(Long accountId) {
             this.accountId = accountId;
@@ -100,12 +112,18 @@ public class UserAccount {
             return this;
         }
 
+        public Builder setToken(String token) {
+            this.token = token;
+            return this;
+        }
+
         public Builder copy(UserAccount userAccount) {
             this.accountId = userAccount.getAccountId();
             this.email = userAccount.getEmail();
             this.passwordHash = userAccount.getPasswordHash();
             this.createdAt = userAccount.getCreatedAt();
             this.user = userAccount.getUser();
+            this.token = userAccount.getToken();
             return this;
         }
 

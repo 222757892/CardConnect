@@ -1,4 +1,3 @@
-
 // src/pages/Signup.js
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
@@ -57,7 +56,9 @@ export default function Signup() {
       }
 
       if (!response.ok) {
-        throw new Error(data.message || data.error || `Signup failed (${response.status})`);
+        throw new Error(
+          data.message || data.error || `Signup failed (${response.status})`
+        );
       }
 
       localStorage.setItem("user", JSON.stringify(data || { email }));

@@ -1,5 +1,5 @@
-import React from "react";
-import { Button as PaperButton } from "react-native-paper";
+import React from 'react';
+import { Button as PaperButton } from 'react-native-paper';
 
 export function AppButton({ style, children, onPress, ...props }) {
   return (
@@ -9,9 +9,9 @@ export function AppButton({ style, children, onPress, ...props }) {
       textColor="#ffffff"
       rippleColor="#4A90E2"
       onPress={onPress}
-      // loading="true"
-      // onPress={() => console.log("Pressed")}
-      style={[{ borderRadius: 50 }]}
+      contentStyle={{ paddingVertical: 8 }} // button height
+      style={[{ borderRadius: 10 }, style]}
+      {...props}
     >
       {children}
     </PaperButton>

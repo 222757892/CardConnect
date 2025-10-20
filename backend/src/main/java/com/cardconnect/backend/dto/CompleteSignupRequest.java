@@ -1,4 +1,3 @@
-// CompleteSignupRequest.java
 package com.cardconnect.backend.dto;
 
 public class CompleteSignupRequest {
